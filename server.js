@@ -32,7 +32,7 @@ const adminRouter = require("./routes/admin.routes");
 // map URL starts:
 app.get("*", checkUser);
 app.use("/api/auth", authRouter);
-app.use("/api/admin", requireAuth, adminRouter);
+// app.use("/api/admin", requireAuth, adminRouter);
 
 app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}`);
