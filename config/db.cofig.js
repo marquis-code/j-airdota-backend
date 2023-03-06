@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+mongoose.set('strictQuery', true)
 const dbOptions = {
     useNewUrlParser: true,
     useUnifiedTopology: true,

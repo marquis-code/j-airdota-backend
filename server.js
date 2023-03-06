@@ -4,7 +4,7 @@ const morgan = require("morgan");
 const helment = require("helmet");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const { requireAuth, checkUser } = require("./middleware/auth.middleware");
+// const { requireAuth, checkUser } = require("./middleware/auth.middleware");
 dotenv.config();
 
 const cookieParser = require("cookie-parser");
@@ -27,12 +27,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 const authRouter = require("./routes/auth.routes");
-const adminRouter = require("./routes/admin.routes");
+const productRouter = require("./routes/product.route");
 
 // map URL starts:
-app.get("*", checkUser);
+// app.get("*", checkUser);
 app.use("/api/auth", authRouter);
-// app.use("/api/admin", requireAuth, adminRouter);
+app.use("/api/product", productRouter);
 
 app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}`);

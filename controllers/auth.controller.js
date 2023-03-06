@@ -1,4 +1,6 @@
 const User = require("../models/user.models");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 const handleErrors = (err) => {
   let errors = {
@@ -34,7 +36,6 @@ const createToken = (id) => {
   const accessToken = jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: maxAge,
   });
-
   return accessToken;
 };
 
@@ -59,7 +60,7 @@ module.exports.signup_handler = async (req, res) => {
       secure: true,
     });
 
-    res.status(200).json({ user: user._id });
+    res.status(200).json({ user: new_user._id });
   } catch (error) {
     let errors = handleErrors(error);
     return res.json({
@@ -72,7 +73,14 @@ module.exports.login_handler = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await User.login(email, password);
+    const user = await User.findOne({ email });
+    if (!user) {
+      throw Error("Invalid email");
+    }
+    let auth = await bcrypt.compare(password, user.password);
+    if (!auth) {
+      throw Error("Invalid password");
+    }
 
     const token = createToken(user._id);
     res.cookie("jwt", token, {
@@ -91,6 +99,12 @@ module.exports.login_handler = async (req, res) => {
 };
 
 module.exports.logout_handler = (req, res, next) => {
-  res.cookie("jwt", "", { maxAge: 1 });
-  res.redirect("/");
+  try {
+    res.cookie("jwt", "", { maxAge: 1 });
+    return res.status(200).json({ successMessage: "Logout was successful" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ errorMessage: "Something went wrong. Please try again" });
+  }
 };
