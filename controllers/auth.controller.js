@@ -108,3 +108,5 @@ module.exports.logout_handler = (req, res, next) => {
       .json({ errorMessage: "Something went wrong. Please try again" });
   }
 };
+
+module.exports.reset_handler = (req, res, next) => {};
