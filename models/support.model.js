@@ -99,6 +99,6 @@ supportSchema.set("toJSON", {
   virtuals: true,
 });
 
-const Support = mongoose.model("support", supportSchema);
+const Support = mongoose.model("support", suSchema);
 
 module.exports = Support;
