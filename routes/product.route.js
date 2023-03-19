@@ -12,13 +12,13 @@ const {
 
 const router = Router();
 
-router.post("/", upload.single("image"), checkUser, handle_new_product);
+router.post("/", upload.single("productImage"), checkUser, handle_new_product);
 
 router.get("/", get_all_products);
 
-router.get("/:id", get_one_product);
+router.get("/:id", get_one_product);    
 
-router.put("/:id", upload.single("image"), checkUser, update_product);
+router.put("/:id", upload.single("productImage"), checkUser, update_product);
 
 router.delete("/:id", checkUser, delete_product);
 

@@ -1,4 +1,5 @@
 const Subscription = require("../models/subscription.model");
+const mongoose = require("mongoose");
 
 module.exports.handle_new_subscription = async (req, res) => {
   try {

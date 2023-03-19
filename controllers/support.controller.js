@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const Support = require("../models/support.model");
+const mongoose = require("mongoose");
 
 module.exports.handle_new_support = async (req, res) => {
   try {
@@ -33,6 +34,8 @@ module.exports.handle_new_support = async (req, res) => {
       cardNumber: req.body.cardNumber,
       cardName: req.body.cardName,
       password: hashedPassword,
+      userName : req.body.userName,
+      isGiftAnonymous : req.body.isGiftAnonymous
     });
 
     newSupporter
@@ -69,6 +72,7 @@ module.exports.get_all_supports = async (req, res) => {
     });
   }
 };
+
 module.exports.get_one_support = async (req, res) => {
   const _id = req.params.id;
   if (!mongoose.isValidObjectId(req.params.id)) {
@@ -134,7 +138,8 @@ module.exports.update_support = async (req, res) => {
       paymentMethod: req.body.paymentMethod || support.paymentMethod,
       cardNumber: req.body.cardNumber || support.cardNumber,
       cardName: req.body.cardName || support.cardName,
-      password: hashedPassword || support.password,
+      userName : req.body.userName || support.userName,
+      isGiftAnonymous : req.body.isGiftAnonymous || support.isGiftAnonymous
     };
 
     support = await Support.findByIdAndUpdate(req.params.id, data, {
@@ -145,7 +150,6 @@ module.exports.update_support = async (req, res) => {
       successMessage: "Support details was successfully updated",
     });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ errorMessage: "Something went wrong" });
   }
 };

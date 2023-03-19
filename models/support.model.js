@@ -56,8 +56,7 @@ let supportSchema = new mongoose.Schema(
       required: [true, "please enter your state"],
     },
     postalCode: {
-      type: String,
-      lowercase: true,
+      type: Number,
       required: [true, "please enter your postal code"],
     },
     nameToRecognizeContribution: {
@@ -65,6 +64,10 @@ let supportSchema = new mongoose.Schema(
       lowercase: true,
     },
     isTributeDonation: {
+      type: Boolean,
+      default: false,
+    },
+    isGiftAnonymous: {
       type: Boolean,
       default: false,
     },
@@ -79,6 +82,10 @@ let supportSchema = new mongoose.Schema(
     cardNumber: {
       type: String,
       required: [true, "please enter your number "],
+      maxlength: [16, "Card Number mast be 16 characters"],
+    },
+    userName: {
+      type: String,
     },
     password: {
       type: String,
@@ -99,6 +106,6 @@ supportSchema.set("toJSON", {
   virtuals: true,
 });
 
-const Support = mongoose.model("support", suSchema);
+const Support = mongoose.model("support", supportSchema);
 
 module.exports = Support;

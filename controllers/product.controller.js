@@ -1,6 +1,8 @@
 const Product = require("../models/product.model");
 const cloudinary = require("../utils/cloudinary");
+const mongoose = require("mongoose");
 const upload = require("../utils/multer");
+
 module.exports.handle_new_product = async (req, res) => {
   try {
     if (!req.file) {
@@ -35,7 +37,7 @@ module.exports.handle_new_product = async (req, res) => {
             .status(200)
             .json({ successMessage: "Product saved successfully" });
         })
-        .catch(() => {
+        .catch((error) => {
           return res.status(500).json({
             errorMessage:
               "Something went wrong while saving product. Please try again later",
@@ -48,6 +50,7 @@ module.exports.handle_new_product = async (req, res) => {
     });
   }
 };
+
 module.exports.get_all_products = async (req, res) => {
   try {
     const products = await Product.find();
@@ -62,6 +65,7 @@ module.exports.get_all_products = async (req, res) => {
     });
   }
 };
+
 module.exports.get_one_product = async (req, res) => {
   const _id = req.params.id;
   if (!mongoose.isValidObjectId(req.params.id)) {
@@ -79,6 +83,8 @@ module.exports.get_one_product = async (req, res) => {
       .json({ errorMessage: "Something went wrong. Please try again later." });
   }
 };
+
+
 module.exports.update_product = async (req, res) => {
   if (!mongoose.isValidObjectId(req.params.id)) {
     return res.status(400).json({ errorMessage: "Invalid product ID" });
@@ -100,7 +106,7 @@ module.exports.update_product = async (req, res) => {
       productPrice: req.body.productPrice || product.productPrice,
       isPublished: req.body.isPublished || product.isPublished,
       numberInStock: req.body.numberInStock || product.numberInStock,
-      imageUrl: result?.secure_url || product.image,
+      imageUrl: result?.secure_url || product.imageUrl,
       cloudinary_id: result?.public_id || product.cloudinary_id,
     };
 
@@ -116,10 +122,12 @@ module.exports.update_product = async (req, res) => {
       successMessage: "Product was successfully updated",
     });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ errorMessage: "Something went wrong" });
   }
 };
+
+
+
 module.exports.delete_product = async (req, res) => {
   const _id = req.params.id;
   if (!mongoose.isValidObjectId(req.params.id)) {
@@ -138,21 +146,19 @@ module.exports.delete_product = async (req, res) => {
       .json({ errorMessage: "Something went wrong. Please try again." });
   }
 };
-//product?published=true
+
 module.exports.get_published_products = async (req, res) => {
-  router.get("/", async (req, res) => {
-    const query = req.query.published;
-    try {
-      const products = query
-        ? await Product.find({ isPublished }).sort({ _id: -1 })
-        : await Product.find();
-      return res.status(200).json(products);
-    } catch (error) {
-      return res.status(500).json({
-        errorMessage:
-          error.message ||
-          "Something went wrong while retrieving published products",
-      });
-    }
-  });
+  const query = req.query.published;
+  try {
+    const products = query
+      ? await Product.find({ isPublished }).sort({ _id: -1 })
+      : await Product.find();
+    return res.status(200).json(products);
+  } catch (error) {
+    return res.status(500).json({
+      errorMessage:
+        error.message ||
+        "Something went wrong while retrieving published products",
+    });
+  }
 };

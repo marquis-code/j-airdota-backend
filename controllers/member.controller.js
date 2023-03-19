@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const Member = require("../models/member.model");
-
+const mongoose = require("mongoose");
 module.exports.handle_new_member = async (req, res) => {
   try {
     const member = await Member.findOne({
@@ -23,6 +23,7 @@ module.exports.handle_new_member = async (req, res) => {
       email: req.body.email,
       phone: req.body.phone,
       country: req.body.country,
+      address: req.body.address,
       city: req.body.city,
       state: req.body.state,
       postalCode: req.body.postalCode,
@@ -37,9 +38,9 @@ module.exports.handle_new_member = async (req, res) => {
       .then(() => {
         return res
           .status(200)
-          .json({ successMessage: "Member was successful" });
+          .json({ successMessage: "New Member was successfully created" });
       })
-      .catch(() => {
+      .catch((error) => {
         return res.status(500).json({
           errorMessage:
             "Something went wrong while saving Member. Please try again later",
@@ -123,6 +124,7 @@ module.exports.update_member = async (req, res) => {
       phone: req.body.phone || member.phone,
       country: req.body.country || member.country,
       city: req.body.city || member.city,
+      address: req.body.address || member.address,
       state: req.body.state || member.state,
       postalCode: req.body.postalCode || member.postalCode,
       username: req.body.username || member.username,
@@ -140,7 +142,6 @@ module.exports.update_member = async (req, res) => {
       successMessage: "Member details was successfully updated",
     });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ errorMessage: "Something went wrong" });
   }
 };

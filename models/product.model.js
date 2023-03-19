@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 let productSchema = new mongoose.Schema(
   {
-    productame: {
+    productName: {
       type: String,
       required: [true, "please enter product name"],
     },
@@ -25,6 +25,9 @@ let productSchema = new mongoose.Schema(
     numberInStock: {
       type: Number,
       required: [true, "please enter number in stock"],
+    },
+    cloudinary_id: {
+      type: String,
     },
   },
   {

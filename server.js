@@ -28,11 +28,18 @@ app.use(express.json());
 
 const authRouter = require("./routes/auth.routes");
 const productRouter = require("./routes/product.route");
+const supportRouter = require("./routes/support.routes");
+const subscriptionRouter = require("./routes/subscription.routes");
+const memberRouter = require("./routes/member.routes");
 
 // map URL starts:
 // app.get("*", checkUser);
 app.use("/api/auth", authRouter);
 app.use("/api/product", productRouter);
+
+app.use("/api/support", supportRouter);
+app.use("/api/subscription", subscriptionRouter);
+app.use("/api/member", memberRouter);
 
 app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}`);

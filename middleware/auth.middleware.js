@@ -6,16 +6,13 @@ const requireAuth = (req, res, next) => {
   if (token) {
     jsonwebtoken.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
       if (err) {
-        console.log(err);
-        res.redirect("/login");
+        return res.status(401).json({ errorMessage: "Something went wrong." });
       } else {
-        console.log(decodedToken);
         next();
       }
     });
   } else {
-    console.log("No Toke found in cookie");
-    res.redirect("/login");
+    return res.status(401).json({ errorMessage: "Access denied" });
   }
 };
 
@@ -27,11 +24,10 @@ const checkUser = (req, res, next) => {
       process.env.JWT_SECRET,
       async (err, decodedToken) => {
         if (err) {
-          console.log(err);
-          res.locals.user = null;
-          next();
+          return res
+            .status(401)
+            .json({ errorMessage: "Something went wrong." });
         } else {
-          console.log(decodedToken);
           let user = await User.findById(decodedToken.id);
           res.locals.user = user;
           next();
@@ -39,8 +35,7 @@ const checkUser = (req, res, next) => {
       }
     );
   } else {
-    res.locals.user = null;
-    next();
+    return res.status(401).json({ errorMessage: "Access denied." });
   }
 };
 
