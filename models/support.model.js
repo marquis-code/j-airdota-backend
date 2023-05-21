@@ -7,6 +7,11 @@ let supportSchema = new mongoose.Schema(
       type: String,
       required: [true, "please enter gift donation amount"],
     },
+    supportType: {
+      type: String,
+      emum: ["academy_support_fund", "membership_support_fund", "excellence_fund", "travel_grants_fund", "recognition_fund", "development_grants_fund", "pandemic_crises_fund"],
+      default: "student",
+    },
     isRecurring: {
       type: Boolean,
       default: false,

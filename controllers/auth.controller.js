@@ -35,8 +35,8 @@ const handleErrors = (err) => {
 };
 
 const maxAge = 3 * 24 * 60 * 60;
-const createToken = (id) => {
-  const accessToken = jwt.sign({ id }, process.env.JWT_SECRET, {
+const createToken = (id, role) => {
+  const accessToken = jwt.sign({ id, role }, process.env.JWT_SECRET, {
     expiresIn: maxAge,
   });
   return accessToken;
@@ -56,15 +56,16 @@ module.exports.signup_handler = async (req, res) => {
       password,
     });
 
-    const token = createToken(new_user._id);
+    const token = createToken(new_user._id, new_user.role);
     res.cookie("jwt", token, {
       maxAge: maxAge * 1000,
       httpOnly: true,
       secure: true,
     });
 
-    return res.status(200).json({ user: new_user._id });
+    return res.status(200).json({ user: new_user._id, successMessage: 'Hurry! now you are successfully registred. Please login.' });
   } catch (error) {
+    a
     let errors = handleErrors(error);
     return res.json({
       errors,
@@ -85,14 +86,14 @@ module.exports.login_handler = async (req, res) => {
       throw Error("Invalid password");
     }
 
-    const token = createToken(user._id);
+    const token = createToken(user._id, user.role);
     res.cookie("jwt", token, {
       maxAge: maxAge * 1000,
       httpOnly: true,
       secure: true,
     });
 
-    return res.status(200).json({ user: user._id });
+    return res.status(200).json({ user: user._id, successMessage: '"You are now logged in."' });
   } catch (error) {
     let errors = handleErrors(error);
     return res.json({

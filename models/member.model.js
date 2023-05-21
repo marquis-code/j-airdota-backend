@@ -7,9 +7,18 @@ let memberSchema = new mongoose.Schema(
     prefix: {
       type: String,
     },
+    memberType: {
+      type: String,
+      emum: ["student", "professional", "retired", "special", "supporting", "sustaining"],
+      default: "student",
+    },
     firstName: {
       type: String,
       required: [true, "please enter first name"],
+    },
+    purchasedMembership: {
+      type: Boolean,
+      default : false
     },
     middleName: {
       type: String,

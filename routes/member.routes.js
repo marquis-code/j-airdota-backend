@@ -10,11 +10,11 @@ const {
 
 const router = Router();
 
-router.post("/", handle_new_member);
+router.post("/", checkUser, handle_new_member);
 
-router.get("/", checkUser, get_all_members);
+router.get("/", get_all_members);
 
-router.get("/:id", checkUser, get_one_member);
+router.get("/:id", get_one_member);
 
 router.delete("/:id", checkUser, delete_member);
 

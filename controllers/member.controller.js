@@ -31,6 +31,7 @@ module.exports.handle_new_member = async (req, res) => {
       password: hashedPassword,
       salaryRange: req.body.salaryRange,
       reasonForJoiningAcademy: req.body.reasonForJoiningAcademy,
+      memberType : req.body.memberType
     });
 
     newMember
@@ -130,6 +131,7 @@ module.exports.update_member = async (req, res) => {
       username: req.body.username || member.username,
       password: req.body.password || member.password,
       salaryRange: req.body.salaryRange || member.salaryRange,
+      memberType: req.body.memberType || member.memberType,
       reasonForJoiningAcademy:
         req.body.reasonForJoiningAcademy || member.reasonForJoiningAcademy,
     };

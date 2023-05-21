@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { isEmail } = require("validator");
 
-let userSchema = new mongoose.Schema(
+let guestSchema = new mongoose.Schema(
   {
     firstName: {
       type: String,
@@ -41,15 +41,15 @@ let userSchema = new mongoose.Schema(
   }
 );
 
-userSchema.virtual("id").get(function () {
+guestSchema.virtual("id").get(function () {
   return this._id.toHexString();
 });
 
-userSchema.set("toJSON", {
+guestSchema.set("toJSON", {
   virtuals: true,
 });
 
-userSchema.pre("save", async function (next) {
+guestSchema.pre("save", async function (next) {
   const salt = await bcrypt.genSalt(10);
   let hashedPassword = await bcrypt.hash(this.password, salt);
   this.password = hashedPassword;
@@ -57,6 +57,6 @@ userSchema.pre("save", async function (next) {
 });
 
 
-const User = mongoose.model("user", userSchema);
+const Guest = mongoose.model("guest", guestSchema);
 
-module.exports = User;
+module.exports = Guest;

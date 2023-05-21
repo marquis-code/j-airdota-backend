@@ -12,7 +12,7 @@ let userSchema = new mongoose.Schema(
     email: {
       type: String,
       lowercase: true,
-      required: [true, "p lease enter an email"],
+      required: [true, "please enter an email"],
       unique: true,
       validate: [isEmail, "Please enter a valid email"],
     },
