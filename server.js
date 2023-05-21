@@ -35,6 +35,7 @@ const memberRouter = require("./routes/member.routes");
 const eventRouter = require("./routes/event.routes");
 const memberPurchaseRouter = require("./routes/memberPurchase.routes");
 const newsRoomRouter = require("./routes/newsRoom.routes");
+const publicationRouter = require("./routes/publication.routes");
 
 // map URL starts:
 // app.get("*", checkUser);
@@ -48,6 +49,8 @@ app.use("/api/member", memberRouter);
 app.use("/api/event", eventRouter);
 app.use("/api/member-purchase", memberPurchaseRouter);
 app.use("/api/news-room", newsRoomRouter);
+app.use("/api/publication", publicationRouter);
+
 
 // app.use(function(req, res, next) {
 //   next(createError(404));
