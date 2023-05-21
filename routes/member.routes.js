@@ -5,12 +5,15 @@ const {
   get_all_members,
   get_one_member,
   delete_member,
-  update_member
+  update_member,
+  login_member
 } = require("../controllers/member.controller");
 
 const router = Router();
 
-router.post("/", checkUser, handle_new_member);
+router.post("/signup", handle_new_member);
+
+router.post("/login", login_member);
 
 router.get("/", get_all_members);
 

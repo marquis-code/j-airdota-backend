@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const Member = require("../models/member.model");
 const mongoose = require("mongoose");
 module.exports.handle_new_member = async (req, res) => {
@@ -31,7 +32,7 @@ module.exports.handle_new_member = async (req, res) => {
       password: hashedPassword,
       salaryRange: req.body.salaryRange,
       reasonForJoiningAcademy: req.body.reasonForJoiningAcademy,
-      memberType : req.body.memberType
+      memberType: req.body.memberType
     });
 
     newMember
@@ -39,7 +40,7 @@ module.exports.handle_new_member = async (req, res) => {
       .then(() => {
         return res
           .status(200)
-          .json({ successMessage: "New Member was successfully created" });
+          .json({ successMessage: 'Hurry! now you are successfully registred as a member. Please login.' });
       })
       .catch((error) => {
         return res.status(500).json({
@@ -50,6 +51,53 @@ module.exports.handle_new_member = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       errorMessage: "Something went wrong. Please try again later",
+    });
+  }
+};
+
+module.exports.login_member = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const member = await Member.findOne({ email });
+    if (!member) {
+      return res.status(404).json({
+        message: "Member not found. Invalid login credentials.",
+        success: false,
+      });
+    }
+
+    let auth = await bcrypt.compare(password, user.password);
+    if (!auth) {
+      return res.status(404).json({
+        message: "Member not found. Invalid login credentials.",
+        success: false,
+      });
+    }
+
+    let token = jwt.sign(
+      {
+        id: member._id
+      },
+      process.env.MEMBER_JWT_SECRET,
+      { expiresIn: "3 days" }
+    );
+
+    let result = {
+      firstName: member.firstName,
+      middleName: member.middleName,
+      lastName: member.lastName,
+      email: employee.email,
+      token: `Bearer ${token}`,
+      memberType: member.memberType,
+      expiresIn: 168,
+    };
+
+    return res.status(200).json({ ...result, successMessage: '"You are now logged in."' });
+  } catch (error) {
+    let errors = handleErrors(error);
+    return res.json({
+      errors,
     });
   }
 };
