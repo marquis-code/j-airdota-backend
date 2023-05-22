@@ -1,4 +1,4 @@
-const { checkUser } = require("../middleware/auth.middleware");
+// const { checkUser } = require("../middleware/auth.middleware");
 const { Router } = require("express");
 const {
   handle_new_memberPurchase,
@@ -9,12 +9,12 @@ const {
 
 const router = Router();
 
-router.post("/", checkUser, handle_new_memberPurchase);
+router.post("/", handle_new_memberPurchase);
 
 router.get("/", get_all_memberPurchases);
 
 router.get("/:id", get_one_memberPurchase);
 
-router.delete("/:id", checkUser, delete_memberPurchase);
+router.delete("/:id", delete_memberPurchase);
 
 module.exports = router;

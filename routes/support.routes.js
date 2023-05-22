@@ -1,4 +1,4 @@
-const { checkUser } = require("../middleware/auth.middleware");
+// const { checkUser } = require("../middleware/auth.middleware");
 const { Router } = require("express");
 const {
   handle_new_support,
@@ -12,12 +12,12 @@ const router = Router();
 
 router.post("/", handle_new_support);
 
-router.get("/", checkUser, get_all_supports);
+router.get("/", get_all_supports);
 
-router.get("/:id", checkUser, get_one_support);
+router.get("/:id", get_one_support);
 
-router.delete("/:id", checkUser, delete_support);
+router.delete("/:id", delete_support);
 
-router.put("/:id", checkUser, update_support);
+router.put("/:id", update_support);
 
 module.exports = router;

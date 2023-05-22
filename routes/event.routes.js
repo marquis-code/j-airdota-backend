@@ -1,4 +1,4 @@
-const { checkUser } = require("../middleware/auth.middleware");
+// const { checkUser } = require("../middleware/auth.middleware");
 const { Router } = require("express");
 const upload = require("../utils/multer");
 const {
@@ -11,13 +11,13 @@ const {
 
 const router = Router();
 
-router.post("/", checkUser, upload.single("eventImage"), handle_new_event);
+router.post("/", upload.single("eventImage"), handle_new_event);
 
-router.get("/",  get_all_events);
+router.get("/", get_all_events);
 
 router.get("/:id", get_one_event);
-router.put("/:id", checkUser, upload.single("eventImage"), update_event);
+router.put("/:id", upload.single("eventImage"), update_event);
 
-router.delete("/:id", checkUser, delete_event);
+router.delete("/:id", delete_event);
 
 module.exports = router;

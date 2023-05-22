@@ -1,4 +1,4 @@
-const { checkUser } = require("../middleware/auth.middleware");
+// const { checkUser } = require("../middleware/auth.middleware");
 const { Router } = require("express");
 const upload = require("../utils/multer");
 const {
@@ -12,16 +12,16 @@ const {
 
 const router = Router();
 
-router.post("/", upload.single("productImage"), checkUser, handle_new_product);
+router.post("/", upload.single("productImage"), handle_new_product);
 
 router.get("/", get_all_products);
 
-router.get("/:id", get_one_product);    
+router.get("/:id", get_one_product);
 
-router.put("/:id", upload.single("productImage"), checkUser, update_product);
+router.put("/:id", upload.single("productImage"), update_product);
 
-router.delete("/:id", checkUser, delete_product);
+router.delete("/:id", delete_product);
 
-router.get("/published", checkUser, get_published_products);
+router.get("/published", get_published_products);
 
 module.exports = router;

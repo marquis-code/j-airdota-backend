@@ -172,14 +172,6 @@ module.exports.login_handler = async (req, res) => {
 
     sendOTPVerificationEmail(user, res);
 
-    // const token = createToken(user._id, user.role);
-    // res.cookie("jwt", token, {
-    //   maxAge: maxAge * 1000,
-    //   httpOnly: true,
-    //   secure: true,
-    // });
-
-    // return res.status(200).json({ user: user._id, successMessage: '"You are now logged in."' });
   } catch (error) {
     let errors = handleErrors(error);
     return res.json({
