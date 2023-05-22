@@ -11,7 +11,7 @@ const router = Router();
 
 router.post("/", checkUser, handle_new_newsRoom);
 
-router.get("/",checkUser, get_all_newsRooms);
+router.get("/", get_all_newsRooms);
 
 router.get("/:id", get_one_newsRoom);
 

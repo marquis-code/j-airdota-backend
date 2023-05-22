@@ -15,9 +15,9 @@ router.post("/signup", handle_new_member);
 
 router.post("/login", login_member);
 
-router.get("/", get_all_members);
+router.get("/",  checkUser, get_all_members);
 
-router.get("/:id", get_one_member);
+router.get("/:id",  checkUser, get_one_member);
 
 router.delete("/:id", checkUser, delete_member);
 

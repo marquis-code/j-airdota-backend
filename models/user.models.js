@@ -21,6 +21,10 @@ let userSchema = new mongoose.Schema(
       required: [true, "please enter a password"],
       minlength: [6, "Minimum password length is 6 characters"],
     },
+    verified: {
+      type: Boolean,
+      default: false,
+    },
     role: {
       type: String,
       emum: ["admin", "user"],
