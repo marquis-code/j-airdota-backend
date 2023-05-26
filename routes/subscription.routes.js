@@ -11,7 +11,7 @@ const router = Router();
 
 router.post("/", handle_new_subscription);
 
-router.get("/", checkUser, get_all_subscriptions);
+router.get("/", get_all_subscriptions);
 
 router.get("/:id", checkUser,  get_one_subscription);
 

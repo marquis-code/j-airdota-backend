@@ -12,7 +12,7 @@ const router = Router();
 
 router.post("/", handle_new_support);
 
-router.get("/", checkUser, get_all_supports);
+router.get("/", get_all_supports);
 
 router.get("/:id", checkUser, get_one_support);
 
