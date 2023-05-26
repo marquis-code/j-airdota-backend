@@ -1,4 +1,4 @@
-// const { checkUser } = require("../middleware/auth.middleware");
+const { checkUser } = require("../middleware/auth.middleware");
 const { Router } = require("express");
 const {
   handle_new_newsRoom,
@@ -9,12 +9,12 @@ const {
 
 const router = Router();
 
-router.post("/", handle_new_newsRoom);
+router.post("/", checkUser, handle_new_newsRoom);
 
 router.get("/", get_all_newsRooms);
 
-router.get("/:id", get_one_newsRoom);
+router.get("/:id", checkUser, get_one_newsRoom);
 
-router.delete("/:id", delete_newsRoom);
+router.delete("/:id", checkUser, delete_newsRoom);
 
 module.exports = router;

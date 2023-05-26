@@ -1,4 +1,4 @@
-// const { checkUser } = require("../middleware/auth.middleware");
+const { checkUser } = require("../middleware/auth.middleware");
 const { Router } = require("express");
 const {
   handle_new_subscription,
@@ -11,10 +11,10 @@ const router = Router();
 
 router.post("/", handle_new_subscription);
 
-router.get("/", get_all_subscriptions);
+router.get("/", checkUser, get_all_subscriptions);
 
-router.get("/:id", get_one_subscription);
+router.get("/:id", checkUser,  get_one_subscription);
 
-router.delete("/:id", delete_subscription);
+router.delete("/:id", checkUser, delete_subscription);
 
 module.exports = router;

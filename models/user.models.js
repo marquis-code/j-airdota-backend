@@ -13,8 +13,14 @@ let userSchema = new mongoose.Schema(
       type: String,
       lowercase: true,
       required: [true, "please enter an email"],
-      unique: true,
-      validate: [isEmail, "Please enter a valid email"],
+      unique: [true, "email already exists in database!"],
+      validate: {
+        validator: function (v) {
+          return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+        },
+        message: '{VALUE} is not a valid email!'
+      }
+      // validate: [isEmail, "Please enter a valid email"],
     },
     password: {
       type: String,
@@ -30,6 +36,10 @@ let userSchema = new mongoose.Schema(
       emum: ["admin", "user"],
       default: "user",
     },
+    created: {
+      type: Date,
+      default: Date.now
+    }
   },
   {
     timestamps: true,

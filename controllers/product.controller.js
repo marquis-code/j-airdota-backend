@@ -148,10 +148,10 @@ module.exports.delete_product = async (req, res) => {
 };
 
 module.exports.get_published_products = async (req, res) => {
-  const query = req.query.published;
+  const query = req.query.isPublished;
   try {
     const products = query
-      ? await Product.find({ isPublished }).sort({ _id: -1 })
+      ? await Product.find({ isPublished : query }).sort({ _id: -1 })
       : await Product.find();
     return res.status(200).json(products);
   } catch (error) {

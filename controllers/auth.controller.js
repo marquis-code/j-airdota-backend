@@ -322,7 +322,7 @@ module.exports.handle_otp_verification = async (req, res) => {
               secure: true,
             });
 
-            return res.status(200).json({ user: user._id, successMessage: 'You are now logged in.' });
+            return res.status(200).json({ user: { username: user.username, email: user.email, role: user.role }, successMessage: 'You are now logged in.', accessToken: token });
             // return res.status(200).json({
             //   successMessage: "Email has been verified.",
             //   data: { userId },
