@@ -163,20 +163,17 @@ module.exports.login_handler = async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      throw Error("Invalid email");
+      return res.status(400).json({ errorMessage: "Invalid credentials!" });
     }
     let auth = await bcrypt.compare(password, user.password);
     if (!auth) {
-      throw Error("Invalid password");
+      return res.status(400).json({ errorMessage: "Invalid credentials!" });
     }
 
     sendOTPVerificationEmail(user, res);
 
   } catch (error) {
-    let errors = handleErrors(error);
-    return res.json({
-      errors,
-    });
+    return res.status(500).json({ errorMessage: error.message });
   }
 };
 
