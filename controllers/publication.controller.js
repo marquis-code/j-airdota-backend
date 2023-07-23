@@ -152,4 +152,3 @@ module.exports.delete_publication = async (req, res) => {
             .json({ errorMessage: "Something went wrong. Please try again." });
     }
 };
-
