@@ -11,13 +11,13 @@ const {
 
 const router = Router();
 
-router.post("/", checkUser, upload.single("publicationImage"), handle_new_publication);
+router.post("/", checkUser, upload.single("file"), handle_new_publication);
 
 router.get("/", get_all_publications);
 
 router.get("/:id", get_one_publication);
 
-router.put("/:id", checkUser, upload.single("publicationImage"), update_publication);
+router.put("/:id", checkUser, upload.single("file"), update_publication);
 
 router.delete("/:id", checkUser, delete_publication);
 

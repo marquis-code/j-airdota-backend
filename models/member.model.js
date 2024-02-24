@@ -4,31 +4,18 @@ const bcrypt = require("bcrypt");
 
 let memberSchema = new mongoose.Schema(
   {
-    prefix: {
-      type: String,
-    },
     memberType: {
       type: String,
-      emum: ["student", "professional", "retired", "special", "supporting", "sustaining"],
-      default: "student",
+      emum: ["academy", "lab"],
+      default: "academy",
     },
     firstName: {
       type: String,
       required: [true, "please enter first name"],
     },
-    purchasedMembership: {
-      type: Boolean,
-      default : false
-    },
-    middleName: {
-      type: String,
-    },
     lastName: {
       type: String,
       required: [true, "please enter last name"],
-    },
-    suffix: {
-      type: String,
     },
     email: {
       type: String,
@@ -40,45 +27,21 @@ let memberSchema = new mongoose.Schema(
     phone: {
       type: String,
     },
-    country: {
-      type: String,
-      lowercase: true,
-      required: [true, "please enter your country"],
-    },
     address: {
       type: String,
       lowercase: true,
       required: [true, "please enter your address"],
-    },
-    city: {
-      type: String,
-      lowercase: true,
-      required: [true, "please enter your city"],
-    },
-    state: {
-      type: String,
-      lowercase: true,
-      required: [true, "please enter your state"],
     },
     postalCode: {
       type: String,
       lowercase: true,
       required: [true, "please enter your postal code"],
     },
-    username: {
+    preferredContactMode: {
       type: String,
-    },
-    password: {
-      type: String,
-      required: [true, "please enter your password"],
-    },
-    salaryRange: {
-      type: String,
-      required: [true, "please enter your salary range"],
-    },
-    reasonForJoiningAcademy: {
-      type: String,
-    },
+      emum: ["phone", "email", 'any'],
+      default: "email",
+    }
   },
   {
     timestamps: true,
@@ -93,12 +56,6 @@ memberSchema.set("toJSON", {
   virtuals: true,
 });
 
-memberSchema.pre("save", async function (next) {
-  const salt = await bcrypt.genSalt(10);
-  let hashedPassword = await bcrypt.hash(this.password, salt);
-  this.password = hashedPassword;
-  next();
-});
 
 const Member = mongoose.model("member", memberSchema);
 

@@ -1,4 +1,4 @@
-const Event = require("../models/events.model");
+const Event = require("../models/events.models.js");
 const cloudinary = require("../utils/cloudinary");
 const mongoose = require("mongoose");
 
@@ -24,6 +24,7 @@ module.exports.handle_new_event = async (req, res) => {
                 programTitle: req.body.programTitle,
                 programDescription: req.body.programDescription,
                 programDate: req.body.programDate,
+                programRecordingUrl: req.body.programRecordingUrl,
                 programImageUrl: upload_response.url,
                 cloudinary_id: upload_response.public_id,
             });
@@ -101,6 +102,7 @@ module.exports.update_event = async (req, res) => {
             programTitle: req.body.programTitle || event.programTitle,
             programDescription: req.body.programDescription || event.programDescription,
             programDate: req.body.programDate || event.programDate,
+            programRecordingUrl: req.body.programRecordingUrl || event.programRecordingUrl,
             programImageUrl: result?.secure_url || event.programImageUrl,
             cloudinary_id: result?.public_id || event.cloudinary_id,
         };

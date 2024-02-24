@@ -10,6 +10,9 @@ let eventsSchema = new mongoose.Schema(
       type: String,
       required: [true, "please enter event description"],
     },
+    programRecordingUrl: {
+      type: String
+    },
     programDate: { type: Date, default: Date.now },
 
     programImageUrl: {

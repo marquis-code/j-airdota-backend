@@ -11,7 +11,7 @@ const {
 
 const router = Router();
 
-router.post("/", checkUser, upload.single("eventImage"), handle_new_event);
+router.post("/", upload.single("eventImage"), handle_new_event);
 
 router.get("/", get_all_events);
 

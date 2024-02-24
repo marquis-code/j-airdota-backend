@@ -1,4 +1,4 @@
-const Subscription = require("../models/subscription.model");
+const Subscription = require("../models/subscription.model.js");
 const mongoose = require("mongoose");
 
 module.exports.handle_new_subscription = async (req, res) => {
@@ -11,13 +11,7 @@ module.exports.handle_new_subscription = async (req, res) => {
     }
 
     const newSubscription = new Subscription({
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
-      phone: req.body.phone,
-      address: req.body.address,
-      sendEmail: req.body.sendEmail,
-      sendPhone: req.body.sendPhone,
+      email: req.body.email
     });
 
     newSubscription

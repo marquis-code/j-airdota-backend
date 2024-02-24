@@ -1,107 +1,73 @@
 const User = require("../models/user.models");
 const Token = require("../models/token.model");
-const OTPVerification = require("../models/OTPVerification");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
-const Subscription = require("../models/Subscription");
-const nodemailerMailgunTransport = require("nodemailer-mailgun-transport");
+const Subscription = require("../models/subscription.model");
+const OTPVerification = require("../models/OTPVerification");
 const sendEmail = require("../utils/sendEmail");
+const Mailgen = require("mailgen");
 
-const auth = {
-  auth: {
-    api_key: process.env.MAILGUN_APIKEY,
-    domain: process.env.MAILGUN_DOMAIN,
+// Generate email body using Mailgen
+const MailGenerator = new Mailgen({
+  theme: "default",
+  product: {
+    name: "AAIRTA Team.",
+    link: "https://mailgen.js/",
+    copyright: 'Copyright © 2024 AAIRTA. All rights reserved.',
   },
-};
-
-const transporter = nodemailer.createTransport(
-  nodemailerMailgunTransport(auth)
-);
-
-
-transporter.verify((error, success) => {
-  if (error) {
-    console.log(error);
-  } else {
-    console.log("ready for message transport");
-    console.log(success);
-  }
 });
 
-const handleErrors = (err) => {
-  let errors = {
-    username: "",
-    email: "",
-    password: "",
+let mailtrapTransport = nodemailer.createTransport({
+  host: "smtp.mailtrap.io",
+  port: 2525,
+  auth: {
+    user: process.env.MAILTRAP_AUTH_USER,
+    pass: process.env.MAILTRAP_AUTH_PASSWORD
+  },
+});
+
+const sendOTPVerificationEmail = async ({ _id, email, username }, res) => {
+  const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
+  const emailMessage = {
+    body: {
+      greeting: 'Dear',
+      signature: 'Sincerely',
+      title: `Hello, ${username}`,
+      intro: `We recieved a request to access your AAIRTA Account ${email} through your email address. Your One Time OTP verification code is: ${otp}`,
+      outro:
+        "Need help, or have questions? Just reply to this email, we'd love to help.",
+    },
+  };
+  var emailBody = MailGenerator.generate(emailMessage);
+
+  const mailTrapMailOptions = {
+    from: process.env.ACADEMY_AUTH_EMAIL, 
+    to: email,
+    subject: "AAIRTA Email Verification Code (One Time Password)", // Subject line
+    html: emailBody,
   };
 
-  if (err.code === 11000) {
-    errors.email = "Email already exist!";
-    return errors;
-  }
-
-  if (err.message.includes("user validation error")) {
-    Object.values(err.errors).forEach(({ properties }) => {
-      errors[properties.path] = properties.message;
-    });
-  }
-
-  if (err.message === "Invalid password") {
-    errors.password = "Invalid email or password";
-  }
-
-  if (err.message === "Invalid email") {
-    errors.email = "Invalid email or password";
-  }
-
-  return errors;
-};
-
-const sendOTPVerificationEmail = async ({ _id, email }, res) => {
-  try {
-    const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
-    const mailOptions = {
-      from: process.env.AUTH_EMAIL,
-      to: email,
-      subject: "AAIRTA Email Verification Code (One Time Password)",
-      html: `
-           <p>Hi!</p>
-           <p>We recieved a request to access your AAIRTA Account ${email} through your email address.</p>
-           <p>Your One Time OTP verification code is: <h3> ${otp}</h3></p>
-           <p>Please enter the OTP to verify your email address.</p>
-           <p>This code <b>expires in 30 minutes</b>.</p>
-           <p>If you did not request this code, it is possible that someone else is trying to access the AAIRTA Account ${email}</p>
-           <p><b>Do not forward or give this code to anyone.</b></p>
-           <p> If you cannot see the email from 'sandbox.mgsend.net' in your inbox, make sure to check your SPAM folder.</p>
-           <P>If you have any questions, send us an email panafstraginternational@gmail.com or isholawilliams@gmail.com</P>
-          <p>We’re glad you’re here!,</p>
-          <p>The AAIRTA team</p>
-      `,
-    };
-
-    const saltRounds = 10;
-    const hashedOtp = await bcrypt.hash(otp, saltRounds);
-    const newOTPVerification = await new OTPVerification({
-      userId: _id,
-      otp: hashedOtp,
-      expiresAt: Date.now() + 1800000,
-      createdAt: Date.now(),
-    });
-
-    await newOTPVerification.save();
-    await transporter.sendMail(mailOptions);
-
-    return res.status(200).json({
-      successMessage: "Verification otp email sent.",
-      data: { userId: _id, email },
-    });
-  } catch (error) {
-    return res.status(200).json({
-      errorMessage: error.messages,
-    });
-  }
+  mailtrapTransport.sendMail(mailTrapMailOptions, async function (err, info) {
+    if (err) {
+      console.log(err);
+    } else {
+      const saltRounds = 10;
+      const hashedOtp = await bcrypt.hash(otp, saltRounds);
+      const newOTPVerification = await new OTPVerification({
+        userId: _id,
+        otp: hashedOtp,
+        expiresAt: Date.now() + 1800000,
+        createdAt: Date.now(),
+      });
+      await newOTPVerification.save();
+      return res.status(200).json({
+        successMessage: "Verification otp email sent.",
+        data: { userId: _id, email },
+      });
+    }
+  });
 };
 
 const maxAge = 3 * 24 * 60 * 60;
@@ -128,7 +94,6 @@ module.exports.signup_handler = async (req, res) => {
       verified: false,
     });
 
-
     newAdminUser
       .save()
       .then((result) => {
@@ -140,19 +105,10 @@ module.exports.signup_handler = async (req, res) => {
             "Something went wrong, while saving admin user account, please try again.",
         });
       });
-
-    // const token = createToken(new_user._id, new_user.role);
-    // res.cookie("jwt", token, {
-    //   maxAge: maxAge * 1000,
-    //   httpOnly: true,
-    //   secure: true,
-    // });
-
-    // return res.status(200).json({ user: new_user._id, successMessage: 'Hurry! now you are successfully registred. Please login.' });
   } catch (error) {
-    let errors = handleErrors(error);
     return res.json({
-      errors,
+      errorMessage:
+        "Something went wrong, while saving admin user account, please try again.",
     });
   }
 };
@@ -171,7 +127,6 @@ module.exports.login_handler = async (req, res) => {
     }
 
     sendOTPVerificationEmail(user, res);
-
   } catch (error) {
     return res.status(500).json({ errorMessage: error.message });
   }
@@ -319,7 +274,15 @@ module.exports.handle_otp_verification = async (req, res) => {
               secure: true,
             });
 
-            return res.status(200).json({ user: { username: user.username, email: user.email, role: user.role }, successMessage: 'You are now logged in.', accessToken: token });
+            return res.status(200).json({
+              user: {
+                username: user.username,
+                email: user.email,
+                role: user.role,
+              },
+              successMessage: "You are now logged in.",
+              accessToken: token,
+            });
             // return res.status(200).json({
             //   successMessage: "Email has been verified.",
             //   data: { userId },
@@ -333,7 +296,7 @@ module.exports.handle_otp_verification = async (req, res) => {
       errorMessage: error.message,
     });
   }
-}
+};
 
 module.exports.handle_resend_otp_verification = async (req, res) => {
   try {
@@ -351,7 +314,7 @@ module.exports.handle_resend_otp_verification = async (req, res) => {
       errorMessage: error.message,
     });
   }
-}
+};
 
 module.exports.handle_subscription = async (req, res) => {
   const { email } = req.body;
@@ -397,4 +360,4 @@ module.exports.handle_subscription = async (req, res) => {
       errorMessage: "SOMETHING WENT WRONG. PLEASE TRY AGAIN",
     });
   }
-}
+};

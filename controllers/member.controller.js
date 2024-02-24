@@ -1,7 +1,26 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const Member = require("../models/member.model");
 const mongoose = require("mongoose");
+const nodemailer = require("nodemailer");
+const Mailgen = require("mailgen");
+
+const MailGenerator = new Mailgen({
+  theme: "default",
+  product: {
+    name: "Hurray! Welcome to AAIRTA Academy",
+    link: "https://mailgen.js/",
+    copyright: 'Copyright © 2024 AAIRTA. All rights reserved.',
+  },
+});
+
+let mailtrapTransport = nodemailer.createTransport({
+  host: "smtp.mailtrap.io",
+  port: 2525,
+  auth: {
+    user: process.env.MAILTRAP_AUTH_USER,
+    pass: process.env.MAILTRAP_AUTH_PASSWORD
+  },
+});
+
 module.exports.handle_new_member = async (req, res) => {
   try {
     const member = await Member.findOne({
@@ -13,34 +32,50 @@ module.exports.handle_new_member = async (req, res) => {
       });
     }
 
-    const salt = await bcrypt.genSalt(10);
-    let hashedPassword = await bcrypt.hash(req.body.password, salt);
+    const emailMessage = {
+      body: {
+        greeting: 'Dear',
+        signature: 'Sincerely',
+        title: `Hello, ${req.body.firstName} ${req.body.lastName}`,
+        intro: 'Thank you for showing interest in joining the AAIRTA Academy. We would revert back you shortly.',
+        outro:
+          "Need help, or have questions? Just reply to this email, we'd love to help.",
+      },
+    };
+    var emailBody = MailGenerator.generate(emailMessage);
+  
+    const mailTrapMailOptions = {
+      from: process.env.ACADEMY_AUTH_EMAIL, 
+      to: req.body.email,
+      subject: "Hurray! Welcome to AAIRTA Academy",
+      html: emailBody,
+    };
+
     const newMember = new Member({
-      prefix: req.body.prefix,
       firstName: req.body.firstName,
-      middleName: req.body.middleName,
       lastName: req.body.lastName,
-      suffix: req.body.suffix,
       email: req.body.email,
       phone: req.body.phone,
-      country: req.body.country,
       address: req.body.address,
-      city: req.body.city,
-      state: req.body.state,
       postalCode: req.body.postalCode,
-      username: req.body.username,
-      password: hashedPassword,
-      salaryRange: req.body.salaryRange,
-      reasonForJoiningAcademy: req.body.reasonForJoiningAcademy,
-      memberType: req.body.memberType
+      memberType: req.body.memberType,
+      preferredContactMode: req.body.preferredContactMode
     });
 
     newMember
       .save()
       .then(() => {
-        return res
-          .status(200)
-          .json({ successMessage: 'Hurry! now you are successfully registred as a member. Please login.' });
+        mailtrapTransport.sendMail(mailTrapMailOptions, function (err, info) {
+          if(err){
+            return res.status(500).json({
+              errorMessage: err,
+            })
+          }else {
+            return res
+            .status(200)
+            .json({ successMessage: 'Thanks for your interest in becoming a member of the AAIRTA team. We will revert shortly!' });
+          }
+        })
       })
       .catch((error) => {
         return res.status(500).json({
@@ -51,53 +86,6 @@ module.exports.handle_new_member = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       errorMessage: "Something went wrong. Please try again later",
-    });
-  }
-};
-
-module.exports.login_member = async (req, res) => {
-  const { email, password } = req.body;
-
-  try {
-    const member = await Member.findOne({ email });
-    if (!member) {
-      return res.status(404).json({
-        message: "Member not found. Invalid login credentials.",
-        success: false,
-      });
-    }
-
-    let auth = await bcrypt.compare(password, user.password);
-    if (!auth) {
-      return res.status(404).json({
-        message: "Member not found. Invalid login credentials.",
-        success: false,
-      });
-    }
-
-    let token = jwt.sign(
-      {
-        id: member._id
-      },
-      process.env.MEMBER_JWT_SECRET,
-      { expiresIn: "3 days" }
-    );
-
-    let result = {
-      firstName: member.firstName,
-      middleName: member.middleName,
-      lastName: member.lastName,
-      email: employee.email,
-      token: `Bearer ${token}`,
-      memberType: member.memberType,
-      expiresIn: 168,
-    };
-
-    return res.status(200).json({ ...result, successMessage: '"You are now logged in."' });
-  } catch (error) {
-    let errors = handleErrors(error);
-    return res.json({
-      errors,
     });
   }
 };
@@ -149,49 +137,5 @@ module.exports.delete_member = async (req, res) => {
     return res
       .status(500)
       .json({ errorMessage: "Something went wrong. Please try again." });
-  }
-};
-
-module.exports.update_member = async (req, res) => {
-  if (!mongoose.isValidObjectId(req.params.id)) {
-    return res.status(400).json({ errorMessage: "Invalid member ID" });
-  }
-  try {
-    let member = await Member.findById(req.params.id);
-
-    if (!member) {
-      return res.status(404).json({ errorMessage: "Member not found" });
-    }
-
-    const data = {
-      prefix: req.body.prefix || member.prefix,
-      firstName: req.body.firstName || member.firstName,
-      middleName: req.body.middleName || member.middleName,
-      lastName: req.body.lastName || member.lastName,
-      suffix: req.body.suffix || member.suffix,
-      email: req.body.email || member.email,
-      phone: req.body.phone || member.phone,
-      country: req.body.country || member.country,
-      city: req.body.city || member.city,
-      address: req.body.address || member.address,
-      state: req.body.state || member.state,
-      postalCode: req.body.postalCode || member.postalCode,
-      username: req.body.username || member.username,
-      password: req.body.password || member.password,
-      salaryRange: req.body.salaryRange || member.salaryRange,
-      memberType: req.body.memberType || member.memberType,
-      reasonForJoiningAcademy:
-        req.body.reasonForJoiningAcademy || member.reasonForJoiningAcademy,
-    };
-
-    member = await Member.findByIdAndUpdate(req.params.id, data, {
-      new: true,
-    });
-
-    return res.status(200).json({
-      successMessage: "Member details was successfully updated",
-    });
-  } catch (error) {
-    return res.status(500).json({ errorMessage: "Something went wrong" });
   }
 };

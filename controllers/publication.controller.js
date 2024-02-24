@@ -28,7 +28,7 @@ module.exports.handle_new_publication = async (req, res) => {
                 available: req.body.available,
                 language: req.body.language,
                 published_date: req.body.published_date,
-                publicationUrl: upload_response.url,
+                publicationUrl: upload_response.secure_url,
                 cloudinary_id: upload_response.public_id,
             });
 
