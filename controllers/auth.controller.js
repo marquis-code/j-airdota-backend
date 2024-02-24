@@ -6,7 +6,6 @@ const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const Subscription = require("../models/subscription.model");
 const OTPVerification = require("../models/OTPVerification");
-const sendEmail = require("../utils/sendEmail");
 const Mailgen = require("mailgen");
 
 // Generate email body using Mailgen
@@ -143,42 +142,42 @@ module.exports.logout_handler = (req, res, next) => {
   }
 };
 
-module.exports.request_reset_handler = async (req, res, next) => {
-  const { email } = req.body;
-  try {
-    let user = await User.findOne({ email });
-    if (!user) {
-      return res
-        .status(404)
-        .json({ errorMessage: "User with given email does not exist" });
-    }
+// module.exports.request_reset_handler = async (req, res, next) => {
+//   const { email } = req.body;
+//   try {
+//     let user = await User.findOne({ email });
+//     if (!user) {
+//       return res
+//         .status(404)
+//         .json({ errorMessage: "User with given email does not exist" });
+//     }
 
-    let token = await Token.findOne({ userId: user._id });
+//     let token = await Token.findOne({ userId: user._id });
 
-    // if (token) await token.deleteOne();
+//     // if (token) await token.deleteOne();
 
-    if (!token) {
-      token = await new Token({
-        userId: user._id,
-        token: crypto.randomBytes(32).toString("hex"),
-      }).save();
-    }
+//     if (!token) {
+//       token = await new Token({
+//         userId: user._id,
+//         token: crypto.randomBytes(32).toString("hex"),
+//       }).save();
+//     }
 
-    const link = `${process.env.clientURL}/passwordReset?token=${token.token}&id=${user._id}`;
-    await sendEmail(
-      user.email,
-      "Password reset request",
-      { name: user.username, link: link },
-      "../templates/requestResetPassword.handlebars"
-    );
+//     const link = `${process.env.clientURL}/passwordReset?token=${token.token}&id=${user._id}`;
+//     await sendEmail(
+//       user.email,
+//       "Password reset request",
+//       { name: user.username, link: link },
+//       "../templates/requestResetPassword.handlebars"
+//     );
 
-    return res.status(200).json({
-      successMessage: "Reset Password link has been sent successfully",
-    });
-  } catch (error) {
-    return res.status(500).json({ errorMessage: "Something went wrong." });
-  }
-};
+//     return res.status(200).json({
+//       successMessage: "Reset Password link has been sent successfully",
+//     });
+//   } catch (error) {
+//     return res.status(500).json({ errorMessage: "Something went wrong." });
+//   }
+// };
 
 module.exports.reset_handler = async (req, res) => {
   const userId = req.params.userId;

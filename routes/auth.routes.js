@@ -4,7 +4,7 @@ const {
   login_handler,
   logout_handler,
   reset_handler,
-  request_reset_handler,
+  // request_reset_handler,
   handle_otp_verification,
   handle_resend_otp_verification,
   handle_subscription
@@ -18,7 +18,7 @@ router.post("/login", login_handler);
 
 router.get("/logout", logout_handler);
 
-router.post("/password-reset", request_reset_handler);
+// router.post("/password-reset", request_reset_handler);
 
 router.post("/verifyOtp", handle_otp_verification);
 

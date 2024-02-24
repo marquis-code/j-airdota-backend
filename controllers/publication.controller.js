@@ -47,7 +47,6 @@ module.exports.handle_new_publication = async (req, res) => {
                 });
         }
     } catch (error) {
-        console.log(error.message)
         return res.status(500).json({
             errorMessage: "Something went wrong. Please try again later",
         });
@@ -127,7 +126,6 @@ module.exports.update_publication = async (req, res) => {
             successMessage: "publication was successfully updated",
         });
     } catch (error) {
-        console.log(error.message)
         return res.status(500).json({ errorMessage: "Something went wrong" });
     }
 };
