@@ -20,6 +20,11 @@ const publicationSchema = mongoose.Schema({
   publicationUrl: {
     type: String
   },
+  publicationType: {
+    type: String,
+    emum: ["papers", "Conference presentation", 'Teaching document', 'articles'],
+    default: "papers",
+  },
   language: {
     type: String
   },

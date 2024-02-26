@@ -24,6 +24,7 @@ module.exports.handle_new_publication = async (req, res) => {
                 publicationTitle: req.body.publicationTitle,
                 publicationSubTitle: req.body.publicationSubTitle,
                 publicationPrice: req.body.publicationPrice,
+                publicationType: req.body.publicationType,
                 author: req.body.author,
                 available: req.body.available,
                 language: req.body.language,
@@ -103,6 +104,7 @@ module.exports.update_publication = async (req, res) => {
 
         const data = {
             publicationTitle: req.body.publicationTitle || publication.publicationTitle,
+            publicationType: req.body.publicationType || publication.publicationType,
             publicationSubTitle:
                 req.body.publicationSubTitle || publication.publicationSubTitle,
             author: req.body.author || publication.author,
