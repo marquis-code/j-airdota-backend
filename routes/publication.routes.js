@@ -11,7 +11,7 @@ const {
 
 const router = Router();
 
-router.post("/", checkUser, upload.single("file"), handle_new_publication);
+router.post("/", upload.single("file"), handle_new_publication);
 
 router.get("/", get_all_publications);
 
