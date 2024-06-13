@@ -123,8 +123,6 @@ module.exports.update_event = async (req, res) => {
     }
 };
 
-
-
 module.exports.delete_event = async (req, res) => {
     const _id = req.params.id;
     if (!mongoose.isValidObjectId(req.params.id)) {

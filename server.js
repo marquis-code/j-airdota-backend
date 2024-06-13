@@ -30,6 +30,7 @@ const publicationRouter = require("./routes/publication.routes");
 const subscriptionRouter = require("./routes/subscription.routes");
 const memberRouter = require("./routes/member.routes");
 const eventRouter = require("./routes/event.routes");
+const enquiryRouter = require("./routes/enquiry.routes");
 
 // map URL starts:
 app.use("/api/auth", authRouter);
@@ -37,6 +38,7 @@ app.use("/api/publication", publicationRouter);
 app.use("/api/subscription", subscriptionRouter);
 app.use("/api/member", memberRouter);
 app.use("/api/event", eventRouter);
+app.use("/api/enquiry", enquiryRouter);
 
 app.use(function(err, req, res, next) {
   res.locals.message = err.message;
